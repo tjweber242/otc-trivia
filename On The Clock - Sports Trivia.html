@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e40af">
+    <title>On The Clock | Do You Know Ball?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--royal-blue:#2563eb;--royal-blue-dark:#1e40af;--royal-blue-light:#3b82f6;--gold:#fbbf24;--gold-light:#fcd34d;--gold-dark:#d97706;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--white:#fff}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Barlow',sans-serif;min-height:100vh;color:var(--white);background:radial-gradient(ellipse at 20% 20%,rgba(59,130,246,.4) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(30,58,138,.6) 0%,transparent 50%),linear-gradient(180deg,#1e40af 0%,#1e3a8a 50%,#172554 100%);background-attachment:fixed}
+        body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.07;pointer-events:none;z-index:0}
+        .app-container{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+        .header{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(30,64,175,.3);backdrop-filter:blur(10px);gap:8px}
+        .logo{display:flex;align-items:center;gap:8px;cursor:pointer;transition:transform .2s;flex-shrink:0}
+        .logo:hover{transform:scale(1.02)}
+        .logo-icon{width:38px;height:38px;background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--royal-blue-dark);box-shadow:0 2px 8px rgba(251,191,36,.3)}
+        .logo-text{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px}
+        .header-actions{display:flex;gap:6px;flex-shrink:0;align-items:center}
+        .header-btn{height:34px;border-radius:17px;border:none;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.05));color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;padding:0 12px;font-size:12px;font-weight:600;gap:5px}
+        .header-btn:hover{background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.1))}
+        .header-btn svg{width:14px;height:14px}
+        .header-btn.gold{background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));color:var(--royal-blue-dark)}
+        .profile-avatar-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:11px;text-shadow:0 2px 4px rgba(0,0,0,.5)}
+        .screen{display:none;flex:1;flex-direction:column;padding:20px;padding-bottom:100px;animation:fadeIn .3s}
+        .screen.active{display:flex}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .footer{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(180deg,transparent,rgba(23,37,84,.95) 20%);padding:20px;z-index:50}
+        .footer-content{max-width:480px;margin:0 auto;text-align:center}
+        .social-links{display:flex;justify-content:center;gap:16px;margin-bottom:12px}
+        .social-link{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.05));color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+        .social-link:hover{background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.1));transform:scale(1.1)}
+        .social-link svg{width:20px;height:20px}
+        .footer-text{font-size:12px;color:rgba(255,255,255,.5)}
+        .home-hero{text-align:center;padding:30px 0}
+        .tagline{font-family:'Bebas Neue',sans-serif;font-size:46px;line-height:1.05;letter-spacing:4px;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+        .subtitle{font-family:'Bebas Neue',sans-serif;font-size:28px;background:linear-gradient(145deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px}
+        .daily-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.05));padding:10px 20px;border-radius:25px;margin-top:20px;font-size:14px;font-weight:600}
+        .daily-badge::before{content:'📅'}
+        .streak-display{display:flex;justify-content:center;gap:20px;margin-top:16px}
+        .streak-item{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:rgba(255,255,255,.8)}
+        .cta-section{padding:24px 0;display:flex;flex-direction:column;gap:12px}
+        .btn-primary{width:100%;padding:20px 32px;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;background:linear-gradient(145deg,var(--gold-light),var(--gold),var(--gold-dark));color:var(--royal-blue-dark);border:none;border-radius:14px;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(251,191,36,.35),inset 0 2px 0 rgba(255,255,255,.3)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(251,191,36,.4)}
+        .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .btn-secondary{width:100%;padding:16px 24px;font-size:16px;font-weight:600;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.05));color:var(--white);border:none;border-radius:12px;cursor:pointer;transition:all .2s}
+        .btn-share{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(255,255,255,.85));color:var(--royal-blue-dark);border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+        .rules-preview{background:linear-gradient(145deg,rgba(0,0,0,.25),rgba(0,0,0,.15));border-radius:20px;padding:24px;margin-top:20px;border:1px solid rgba(255,255,255,.05)}
+        .rules-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;color:var(--gold)}
+        .rules-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+        .rule-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500}
+        .rule-icon{width:36px;height:36px;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+        .login-prompt{background:linear-gradient(145deg,rgba(251,191,36,.15),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.3);border-radius:16px;padding:20px;text-align:center;margin-top:20px}
+        .login-prompt-text{font-size:14px;color:rgba(255,255,255,.8);margin-bottom:12px}
+        .login-prompt-btns{display:flex;gap:10px}
+        .login-prompt-btns button{flex:1}
+        .played-card{background:linear-gradient(145deg,rgba(34,197,94,.15),rgba(34,197,94,.05));border:1px solid rgba(34,197,94,.3);border-radius:16px;padding:20px;text-align:center;margin-bottom:20px}
+        .played-card h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--success)}
+        .played-card .score{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);margin:12px 0}
+        .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .question-counter{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.7)}
+        .difficulty-badge{padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+        .difficulty-rookie{background:linear-gradient(145deg,#4ade80,#22c55e);color:#052e16}
+        .difficulty-veteran{background:linear-gradient(145deg,#fbbf24,#f59e0b);color:#451a03}
+        .difficulty-allpro{background:linear-gradient(145deg,#f87171,#ef4444);color:#fff}
+        .timer-container{display:flex;flex-direction:column;align-items:center;margin-bottom:24px}
+        .timer-ring{width:110px;height:110px;position:relative}
+        .timer-ring svg{transform:rotate(-90deg)}
+        .timer-ring circle{fill:none;stroke-width:8}
+        .timer-ring .bg{stroke:rgba(255,255,255,.1)}
+        .timer-ring .progress{stroke:var(--success);stroke-linecap:round;transition:stroke-dashoffset .1s linear,stroke .3s}
+        .timer-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2px}
+        .question-card{background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;margin-bottom:24px}
+        .question-text{font-size:20px;font-weight:600;line-height:1.4;text-align:center}
+        .answer-input{width:100%;padding:18px 22px;font-family:'Barlow',sans-serif;font-size:18px;font-weight:500;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.06));border:2px solid rgba(255,255,255,.15);border-radius:14px;color:var(--white);outline:none;transition:all .2s}
+        .answer-input::placeholder{color:rgba(255,255,255,.4)}
+        .answer-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(251,191,36,.2)}
+        .answer-input.correct{border-color:var(--success);background:rgba(34,197,94,.2)}
+        .answer-input.incorrect{border-color:var(--danger);background:rgba(239,68,68,.2)}
+        .submit-btn{width:100%;padding:18px;margin-top:12px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));color:var(--royal-blue-dark);border:none;border-radius:14px;cursor:pointer;transition:all .2s}
+        .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+        .lifeline-section{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
+        .lifeline-btn{display:flex;align-items:center;gap:8px;padding:12px 18px;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:none;border-radius:25px;color:var(--white);font-size:14px;font-weight:600;cursor:pointer}
+        .lifeline-btn:disabled{opacity:.3;cursor:not-allowed}
+        .lifeline-btn .count{background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));color:var(--royal-blue-dark);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+        .mc-container{display:none;flex-direction:column;gap:10px;margin-top:16px}
+        .mc-container.active{display:flex}
+        .choice-btn{padding:16px 20px;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:2px solid rgba(255,255,255,.15);border-radius:12px;color:var(--white);font-size:16px;font-weight:500;cursor:pointer;text-align:left;transition:all .2s}
+        .choice-btn.correct{border-color:var(--success);background:rgba(34,197,94,.3)}
+        .choice-btn.incorrect{border-color:var(--danger);background:rgba(239,68,68,.3)}
+        .score-display{display:flex;justify-content:center;gap:40px;background:linear-gradient(145deg,rgba(0,0,0,.25),rgba(0,0,0,.15));border-radius:12px;padding:14px 20px;margin-top:auto}
+        .score-item{text-align:center}
+        .score-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.6);margin-bottom:4px}
+        .score-value{font-family:'Bebas Neue',sans-serif;font-size:26px}
+        .feedback-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:100;justify-content:center;align-items:center}
+        .feedback-overlay.active{display:flex}
+        .feedback-content{text-align:center;padding:40px}
+        .feedback-icon{font-size:72px;margin-bottom:16px;animation:bounceIn .4s}
+        @keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+        .feedback-text{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;margin-bottom:8px}
+        .feedback-answer{font-size:18px;color:rgba(255,255,255,.7)}
+        .results-header{text-align:center;padding:30px 0}
+        .results-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:4px;margin-bottom:8px}
+        .results-date{font-size:14px;color:rgba(255,255,255,.6)}
+        .final-score-card{background:linear-gradient(145deg,var(--gold-light),var(--gold),var(--gold-dark));border-radius:24px;padding:32px;text-align:center;color:var(--royal-blue-dark);margin-bottom:24px;box-shadow:0 6px 25px rgba(251,191,36,.35)}
+        .final-score-label{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;opacity:.7}
+        .final-score-value{font-family:'Bebas Neue',sans-serif;font-size:80px;line-height:1;margin:8px 0}
+        .final-score-subtitle{font-size:18px;font-weight:600;opacity:.8}
+        .perfect-badge{display:none;align-items:center;gap:8px;background:rgba(0,0,0,.15);padding:10px 20px;border-radius:25px;margin-top:16px;font-weight:700}
+        .question-recap{background:linear-gradient(145deg,rgba(0,0,0,.25),rgba(0,0,0,.15));border-radius:20px;padding:20px;margin-bottom:24px}
+        .recap-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;color:var(--gold)}
+        .recap-list{display:flex;flex-direction:column;gap:8px}
+        .recap-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:10px;font-size:14px}
+        .recap-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+        .recap-icon.correct{background:linear-gradient(145deg,#4ade80,#22c55e)}
+        .recap-icon.incorrect{background:linear-gradient(145deg,#f87171,#ef4444)}
+        .recap-question{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .next-game-timer{text-align:center;margin-top:24px;padding:18px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:14px}
+        .next-game-label{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:8px}
+        .next-game-time{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px}
+        .profile-header{text-align:center;padding:30px 0}
+        .avatar-wrapper{position:relative;display:inline-block;margin-bottom:16px}
+        .avatar-large{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:36px;border:4px solid var(--gold);text-shadow:0 2px 4px rgba(0,0,0,.5),0 0 2px rgba(0,0,0,.8)}
+        .avatar-change-btn{position:absolute;bottom:0;right:0;width:36px;height:36px;background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));border:3px solid var(--royal-blue-dark);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+        .avatar-change-btn svg{width:16px;height:16px;color:var(--royal-blue-dark)}
+        .profile-name{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px}
+        .profile-joined{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px}
+        .profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:30px 0}
+        .stat-card{background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border-radius:14px;padding:16px 8px;text-align:center}
+        .stat-value{font-family:'Bebas Neue',sans-serif;font-size:28px;background:linear-gradient(145deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .stat-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.6);margin-top:4px}
+        .achievements-section{background:linear-gradient(145deg,rgba(0,0,0,.25),rgba(0,0,0,.15));border-radius:20px;padding:24px;margin-bottom:20px}
+        .achievements-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;color:var(--gold)}
+        .achievement-item{display:flex;align-items:center;gap:12px;padding:12px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:12px;margin-bottom:8px}
+        .achievement-item.unlocked{background:linear-gradient(145deg,rgba(251,191,36,.15),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.3)}
+        .achievement-item.locked{opacity:.5}
+        .achievement-icon{font-size:24px}
+        .achievement-info{flex:1}
+        .achievement-name{font-weight:600;font-size:14px}
+        .achievement-desc{font-size:12px;color:rgba(255,255,255,.6)}
+        .leaderboard-tabs{display:flex;background:linear-gradient(145deg,rgba(0,0,0,.3),rgba(0,0,0,.2));border-radius:14px;padding:4px;margin-bottom:20px;overflow-x:auto}
+        .leaderboard-tab{flex:1;padding:12px 6px;background:transparent;border:none;border-radius:10px;color:rgba(255,255,255,.6);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;cursor:pointer;white-space:nowrap}
+        .leaderboard-tab.active{background:linear-gradient(145deg,var(--royal-blue-light),var(--royal-blue));color:var(--white)}
+        .leaderboard-list{display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto}
+        .leaderboard-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:12px}
+        .leaderboard-item.top-3{background:linear-gradient(145deg,rgba(251,191,36,.15),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.3)}
+        .rank{width:28px;font-family:'Bebas Neue',sans-serif;font-size:20px;text-align:center}
+        .rank.gold{color:#fbbf24}
+        .rank.silver{color:#d1d5db}
+        .rank.bronze{color:#cd7f32}
+        .lb-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;text-shadow:0 2px 4px rgba(0,0,0,.5)}
+        .lb-info{flex:1;min-width:0}
+        .lb-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
+        .lb-meta{font-size:11px;color:rgba(255,255,255,.5)}
+        .lb-score{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:200;justify-content:center;align-items:flex-end}
+        .modal-overlay.active{display:flex}
+        .modal-content{width:100%;max-width:480px;background:linear-gradient(180deg,#1e40af 0%,#1e3a8a 100%);border-radius:24px 24px 0 0;padding:32px 24px;animation:slideUp .3s}
+        @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+        .modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px}
+        .modal-close{width:40px;height:40px;border-radius:50%;border:none;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.05));color:var(--white);font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .auth-form{display:flex;flex-direction:column;gap:16px}
+        .form-group{display:flex;flex-direction:column;gap:8px}
+        .form-label{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)}
+        .form-input{padding:16px 18px;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.06));border:2px solid rgba(255,255,255,.15);border-radius:12px;color:var(--white);font-size:16px;outline:none}
+        .form-input:focus{border-color:var(--gold)}
+        .auth-divider{display:flex;align-items:center;gap:16px;margin:8px 0;color:rgba(255,255,255,.4);font-size:13px}
+        .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.2)}
+        .social-auth{display:flex;gap:12px}
+        .social-auth-btn{flex:1;padding:16px;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;color:#1f2937;cursor:pointer}
+        .auth-switch{text-align:center;margin-top:16px;font-size:14px;color:rgba(255,255,255,.6)}
+        .auth-switch a{color:var(--gold);text-decoration:none;font-weight:600}
+        .team-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:200;justify-content:center;align-items:flex-end}
+        .team-modal.active{display:flex}
+        .team-modal-content{width:100%;max-width:480px;max-height:85vh;background:linear-gradient(180deg,#1e40af 0%,#1e3a8a 100%);border-radius:24px 24px 0 0;padding:24px;overflow-y:auto;animation:slideUp .3s}
+        .league-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:8px;flex-wrap:wrap}
+        .league-tab{padding:8px 14px;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:none;border-radius:20px;color:var(--white);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+        .league-tab.active{background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));color:var(--royal-blue-dark)}
+        .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+        .team-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:2px solid transparent;border-radius:12px;cursor:pointer}
+        .team-btn.selected{border-color:var(--gold)}
+        .team-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;text-shadow:0 2px 4px rgba(0,0,0,.5)}
+        .team-name{font-size:9px;color:rgba(255,255,255,.7);text-align:center;line-height:1.1}
+        .share-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:250;justify-content:center;align-items:center;padding:20px}
+        .share-modal.active{display:flex}
+        .share-preview{width:100%;max-width:340px;background:linear-gradient(180deg,#1e40af 0%,#1e3a8a 100%);border-radius:20px;padding:24px;text-align:center;animation:scaleIn .3s}
+        @keyframes scaleIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+        .share-header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+        .share-logo{width:36px;height:36px;background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--royal-blue-dark)}
+        .share-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px}
+        .share-score-box{background:linear-gradient(145deg,var(--gold-light),var(--gold-dark));border-radius:16px;padding:20px;margin-bottom:16px;color:var(--royal-blue-dark)}
+        .share-score-value{font-family:'Bebas Neue',sans-serif;font-size:48px}
+        .share-score-label{font-size:12px;font-weight:700;text-transform:uppercase}
+        .share-emoji{display:flex;justify-content:center;gap:4px;margin-bottom:16px;font-size:24px}
+        .share-tagline{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:20px}
+        .share-buttons{display:flex;flex-direction:column;gap:10px}
+        .share-close{margin-top:16px;padding:12px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:14px;cursor:pointer}
+        .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#1f2937;color:var(--white);padding:14px 28px;border-radius:12px;font-size:14px;font-weight:600;z-index:300;transition:transform .3s}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+        .toast.success{background:#22c55e}
+        .toast.error{background:#ef4444}
+        @media(max-width:400px){.tagline{font-size:38px}.subtitle{font-size:22px}.rules-grid{grid-template-columns:1fr}.team-grid{grid-template-columns:repeat(3,1fr)}.profile-stats{grid-template-columns:repeat(2,1fr)}.header-btn{padding:0 8px;font-size:10px}.logo-text{display:none}}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo" onclick="showScreen('home')">
+                <div class="logo-icon">OTC</div>
+                <span class="logo-text">ON THE CLOCK</span>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="showScreen('leaderboard')">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Leaderboard
+                </button>
+                <button class="header-btn" id="login-btn" onclick="showAuthModal('login')">Log In</button>
+                <button class="header-btn gold" id="signup-btn" onclick="showAuthModal('signup')">Sign Up</button>
+                <button class="profile-avatar-btn" id="avatar-btn" onclick="showScreen('profile')" style="display:none"><span id="avatar-text">?</span></button>
+            </div>
+        </header>
+
+        <div class="screen active" id="home-screen">
+            <div class="home-hero">
+                <h1 class="tagline">DAILY SPORTS<br>TRIVIA</h1>
+                <p class="subtitle">Do You Know Ball?</p>
+                <div class="daily-badge" id="daily-badge"></div>
+                <div class="streak-display" id="streak-display" style="display:none">
+                    <div class="streak-item"><span>🔥</span><span id="home-streak">0</span> Day Streak</div>
+                    <div class="streak-item"><span>👑</span><span id="home-perfects">0</span> Perfect Games</div>
+                </div>
+            </div>
+            <div class="played-card" id="played-card" style="display:none">
+                <h3>✓ ALREADY PLAYED TODAY</h3>
+                <p>Your score</p>
+                <div class="score" id="played-score">8/10</div>
+                <p>Come back tomorrow!</p>
+            </div>
+            <div class="cta-section">
+                <button class="btn-primary" id="play-btn" onclick="startGame()">PLAY NOW</button>
+                <button class="btn-share" onclick="shareGame()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    Share with Friends
+                </button>
+            </div>
+            <div class="rules-preview">
+                <h3 class="rules-title">How It Works</h3>
+                <div class="rules-grid">
+                    <div class="rule-item"><span class="rule-icon">🔟</span><span>10 Questions</span></div>
+                    <div class="rule-item"><span class="rule-icon">⏱️</span><span>25 Sec Per Question</span></div>
+                    <div class="rule-item"><span class="rule-icon">🎯</span><span>Type Your Answers</span></div>
+                    <div class="rule-item"><span class="rule-icon">🆘</span><span>2 Multiple Choice Lifelines</span></div>
+                </div>
+            </div>
+            <div class="login-prompt" id="login-prompt">
+                <p class="login-prompt-text">Create a free account to play and track your stats!</p>
+                <div class="login-prompt-btns">
+                    <button class="btn-secondary" onclick="showAuthModal('login')">Log In</button>
+                    <button class="btn-primary" style="padding:14px 20px;font-size:18px" onclick="showAuthModal('signup')">Sign Up Free</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen" id="game-screen">
+            <div class="game-header">
+                <span class="question-counter" id="q-counter">Question 1 of 10</span>
+                <span class="difficulty-badge difficulty-rookie" id="diff-badge">Rookie</span>
+            </div>
+            <div class="timer-container">
+                <div class="timer-ring">
+                    <svg width="110" height="110" viewBox="0 0 110 110">
+                        <circle class="bg" cx="55" cy="55" r="46"/>
+                        <circle class="progress" id="timer-progress" cx="55" cy="55" r="46" stroke-dasharray="289" stroke-dashoffset="0"/>
+                    </svg>
+                    <span class="timer-text" id="timer-text">25</span>
+                </div>
+            </div>
+            <div class="question-card"><p class="question-text" id="q-text">Loading...</p></div>
+            <div class="answer-section">
+                <div id="type-container">
+                    <input type="text" class="answer-input" id="answer-input" placeholder="Type your answer..." autocomplete="off">
+                    <button class="submit-btn" onclick="submitAnswer()">SUBMIT</button>
+                </div>
+                <div class="mc-container" id="mc-container">
+                    <button class="choice-btn" data-i="0"></button>
+                    <button class="choice-btn" data-i="1"></button>
+                    <button class="choice-btn" data-i="2"></button>
+                    <button class="choice-btn" data-i="3"></button>
+                </div>
+            </div>
+            <div class="lifeline-section">
+                <button class="lifeline-btn" id="lifeline-btn" onclick="useLifeline()">
+                    <span>🎯 Multiple Choice</span>
+                    <span class="count" id="lifeline-count">2</span>
+                </button>
+            </div>
+            <div class="score-display">
+                <div class="score-item"><div class="score-label">Correct</div><div class="score-value" id="game-score">0/0</div></div>
+                <div class="score-item"><div class="score-label">Streak</div><div class="score-value" id="game-streak">0</div></div>
+            </div>
+        </div>
+
+        <div class="screen" id="results-screen">
+            <div class="results-header">
+                <h2 class="results-title">GAME COMPLETE!</h2>
+                <p class="results-date" id="results-date"></p>
+            </div>
+            <div class="final-score-card">
+                <div class="final-score-label">Your Score</div>
+                <div class="final-score-value" id="final-score">0/10</div>
+                <div class="final-score-subtitle" id="score-msg">Keep practicing!</div>
+                <div class="perfect-badge" id="perfect-badge">👑 PERFECT GAME!</div>
+            </div>
+            <div class="question-recap">
+                <h3 class="recap-title">Question Recap</h3>
+                <div class="recap-list" id="recap-list"></div>
+            </div>
+            <div class="share-section">
+                <button class="btn-primary" onclick="showShareModal()">SHARE MY SCORE</button>
+                <button class="btn-share" onclick="shareGame()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    Invite Friends
+                </button>
+            </div>
+            <div class="next-game-timer">
+                <div class="next-game-label">Next game in</div>
+                <div class="next-game-time" id="next-time">--:--:--</div>
+            </div>
+            <button class="btn-secondary" onclick="showScreen('home')" style="margin-top:20px">Back to Home</button>
+        </div>
+
+        <div class="screen" id="profile-screen">
+            <div class="profile-header">
+                <div class="avatar-wrapper">
+                    <div class="avatar-large" id="profile-avatar" style="background:#2563eb">?</div>
+                    <button class="avatar-change-btn" onclick="showTeamModal()">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                    </button>
+                </div>
+                <h2 class="profile-name" id="profile-name">Guest Player</h2>
+                <p class="profile-joined" id="profile-joined">Playing since today</p>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-card"><div class="stat-value" id="stat-games">0</div><div class="stat-label">Games</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-best">0</div><div class="stat-label">Best</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-perfects">0</div><div class="stat-label">Perfect Games</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-streak">0</div><div class="stat-label">Day Streak</div></div>
+            </div>
+            <div class="achievements-section" id="achievements"></div>
+            <button class="btn-secondary" onclick="showScreen('home')">Back to Home</button>
+        </div>
+
+        <div class="screen" id="leaderboard-screen">
+            <h2 style="font-family:'Bebas Neue';font-size:32px;letter-spacing:3px;text-align:center;margin-bottom:20px">LEADERBOARD</h2>
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" data-p="daily">Daily</button>
+                <button class="leaderboard-tab" data-p="monthly">Monthly</button>
+                <button class="leaderboard-tab" data-p="yearly">Yearly</button>
+                <button class="leaderboard-tab" data-p="perfects">👑 Perfect Games</button>
+            </div>
+            <div class="leaderboard-list" id="lb-list"></div>
+            <button class="btn-secondary" onclick="showScreen('home')" style="margin-top:20px">Back to Home</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <button class="social-link" onclick="openSocial('twitter')" title="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
+                <button class="social-link" onclick="openSocial('instagram')" title="Instagram"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></button>
+                <button class="social-link" onclick="openSocial('tiktok')" title="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg></button>
+            </div>
+            <p class="footer-text">© 2026 On The Clock. Do You Know Ball?</p>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-content">
+            <div class="feedback-icon" id="fb-icon">✓</div>
+            <div class="feedback-text" id="fb-text">CORRECT!</div>
+            <div class="feedback-answer" id="fb-answer"></div>
+        </div>
+    </div>
+
+    <div class="team-modal" id="team-modal">
+        <div class="team-modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">CHOOSE YOUR TEAM</h3>
+                <button class="modal-close" onclick="closeTeamModal()">×</button>
+            </div>
+            <div class="league-tabs" id="league-tabs"></div>
+            <div class="team-grid" id="team-grid"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="auth-title">CREATE PROFILE</h3>
+                <button class="modal-close" onclick="closeAuthModal()">×</button>
+            </div>
+            <div class="auth-form" id="signup-form">
+                <div class="form-group"><label class="form-label">Username</label><input type="text" class="form-input" id="signup-user" placeholder="Choose a username"></div>
+                <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="signup-email" placeholder="Enter your email"></div>
+                <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="signup-pass" placeholder="Create a password"></div>
+                <button class="btn-primary" onclick="handleSignup()">CREATE PROFILE</button>
+                <div class="auth-divider">or continue with</div>
+                <div class="social-auth">
+                    <button class="social-auth-btn" onclick="socialAuth('google')"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Google</button>
+                    <button class="social-auth-btn" onclick="socialAuth('apple')"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>Apple</button>
+                </div>
+                <p class="auth-switch">Already have an account? <a href="#" onclick="switchAuth('login');return false">Log in</a></p>
+            </div>
+            <div class="auth-form" id="login-form" style="display:none">
+                <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="login-email" placeholder="Enter your email"></div>
+                <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="login-pass" placeholder="Enter your password"></div>
+                <button class="btn-primary" onclick="handleLogin()">LOG IN</button>
+                <div class="auth-divider">or continue with</div>
+                <div class="social-auth">
+                    <button class="social-auth-btn" onclick="socialAuth('google')"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Google</button>
+                    <button class="social-auth-btn" onclick="socialAuth('apple')"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>Apple</button>
+                </div>
+                <p class="auth-switch">Don't have an account? <a href="#" onclick="switchAuth('signup');return false">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="share-modal" id="share-modal">
+        <div class="share-preview">
+            <div class="share-header">
+                <div class="share-logo">OTC</div>
+                <span class="share-title">ON THE CLOCK</span>
+            </div>
+            <div class="share-score-box">
+                <div class="share-score-value" id="share-score">0/10</div>
+                <div class="share-score-label">Today's Score</div>
+            </div>
+            <div class="share-emoji" id="share-emoji"></div>
+            <div class="share-tagline">DO YOU KNOW BALL?</div>
+            <div class="share-buttons">
+                <button class="btn-primary" onclick="copyShare()">📋 Copy to Clipboard</button>
+                <button class="btn-share" onclick="nativeShare()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    Share via Text/Social
+                </button>
+            </div>
+            <button class="share-close" onclick="closeShareModal()">Close</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ALL TEAMS - Complete rosters
+        const TEAMS = {
+            nba: [
+                {a:"ATL",n:"Hawks",bg:"#E03A3E",t:"#FFF"},{a:"BOS",n:"Celtics",bg:"#007A33",t:"#FFF"},{a:"BKN",n:"Nets",bg:"#000",t:"#FFF"},
+                {a:"CHA",n:"Hornets",bg:"#1D1160",t:"#00788C"},{a:"CHI",n:"Bulls",bg:"#CE1141",t:"#FFF"},{a:"CLE",n:"Cavaliers",bg:"#860038",t:"#FDBB30"},
+                {a:"DAL",n:"Mavericks",bg:"#00538C",t:"#FFF"},{a:"DEN",n:"Nuggets",bg:"#0E2240",t:"#FEC524"},{a:"DET",n:"Pistons",bg:"#C8102E",t:"#FFF"},
+                {a:"GSW",n:"Warriors",bg:"#1D428A",t:"#FFC72C"},{a:"HOU",n:"Rockets",bg:"#CE1141",t:"#FFF"},{a:"IND",n:"Pacers",bg:"#002D62",t:"#FDBB30"},
+                {a:"LAC",n:"Clippers",bg:"#C8102E",t:"#FFF"},{a:"LAL",n:"Lakers",bg:"#552583",t:"#FDB927"},{a:"MEM",n:"Grizzlies",bg:"#5D76A9",t:"#12173F"},
+                {a:"MIA",n:"Heat",bg:"#98002E",t:"#F9A01B"},{a:"MIL",n:"Bucks",bg:"#00471B",t:"#EEE1C6"},{a:"MIN",n:"T-Wolves",bg:"#0C2340",t:"#236192"},
+                {a:"NOP",n:"Pelicans",bg:"#0C2340",t:"#C8102E"},{a:"NYK",n:"Knicks",bg:"#006BB6",t:"#F58426"},{a:"OKC",n:"Thunder",bg:"#007AC1",t:"#EF3B24"},
+                {a:"ORL",n:"Magic",bg:"#0077C0",t:"#C4CED4"},{a:"PHI",n:"76ers",bg:"#006BB6",t:"#ED174C"},{a:"PHX",n:"Suns",bg:"#1D1160",t:"#E56020"},
+                {a:"POR",n:"Blazers",bg:"#E03A3E",t:"#FFF"},{a:"SAC",n:"Kings",bg:"#5A2D81",t:"#63727A"},{a:"SAS",n:"Spurs",bg:"#C4CED4",t:"#000"},
+                {a:"TOR",n:"Raptors",bg:"#CE1141",t:"#FFF"},{a:"UTA",n:"Jazz",bg:"#002B5C",t:"#F9A01B"},{a:"WAS",n:"Wizards",bg:"#002B5C",t:"#E31837"}
+            ],
+            mlb: [
+                {a:"ARI",n:"D-backs",bg:"#A71930",t:"#E3D4AD"},{a:"ATL",n:"Braves",bg:"#CE1141",t:"#13274F"},{a:"BAL",n:"Orioles",bg:"#DF4601",t:"#000"},
+                {a:"BOS",n:"Red Sox",bg:"#BD3039",t:"#0C2340"},{a:"CHC",n:"Cubs",bg:"#0E3386",t:"#CC3433"},{a:"CWS",n:"White Sox",bg:"#27251F",t:"#C4CED4"},
+                {a:"CIN",n:"Reds",bg:"#C6011F",t:"#FFF"},{a:"CLE",n:"Guardians",bg:"#00385D",t:"#E50022"},{a:"COL",n:"Rockies",bg:"#33006F",t:"#C4CED4"},
+                {a:"DET",n:"Tigers",bg:"#0C2340",t:"#FA4616"},{a:"HOU",n:"Astros",bg:"#002D62",t:"#EB6E1F"},{a:"KC",n:"Royals",bg:"#004687",t:"#BD9B60"},
+                {a:"LAA",n:"Angels",bg:"#BA0021",t:"#003263"},{a:"LAD",n:"Dodgers",bg:"#005A9C",t:"#FFF"},{a:"MIA",n:"Marlins",bg:"#00A3E0",t:"#EF3340"},
+                {a:"MIL",n:"Brewers",bg:"#12284B",t:"#B6922E"},{a:"MIN",n:"Twins",bg:"#002B5C",t:"#D31145"},{a:"NYM",n:"Mets",bg:"#002D72",t:"#FF5910"},
+                {a:"NYY",n:"Yankees",bg:"#003087",t:"#FFF"},{a:"OAK",n:"Athletics",bg:"#003831",t:"#EFB21E"},{a:"PHI",n:"Phillies",bg:"#E81828",t:"#002D72"},
+                {a:"PIT",n:"Pirates",bg:"#27251F",t:"#FDB827"},{a:"SD",n:"Padres",bg:"#2F241D",t:"#FFC425"},{a:"SF",n:"Giants",bg:"#FD5A1E",t:"#27251F"},
+                {a:"SEA",n:"Mariners",bg:"#0C2C56",t:"#005C5C"},{a:"STL",n:"Cardinals",bg:"#C41E3A",t:"#FEDB00"},{a:"TB",n:"Rays",bg:"#092C5C",t:"#8FBCE6"},
+                {a:"TEX",n:"Rangers",bg:"#003278",t:"#C0111F"},{a:"TOR",n:"Blue Jays",bg:"#134A8E",t:"#E8291C"},{a:"WSH",n:"Nationals",bg:"#AB0003",t:"#14225A"}
+            ],
+            nhl: [
+                {a:"ANA",n:"Ducks",bg:"#F47A38",t:"#B9975B"},{a:"ARI",n:"Coyotes",bg:"#8C2633",t:"#E2D6B5"},{a:"BOS",n:"Bruins",bg:"#FFB81C",t:"#000"},
+                {a:"BUF",n:"Sabres",bg:"#002654",t:"#FCB514"},{a:"CGY",n:"Flames",bg:"#C8102E",t:"#F1BE48"},{a:"CAR",n:"Hurricanes",bg:"#CC0000",t:"#000"},
+                {a:"CHI",n:"Blackhawks",bg:"#CF0A2C",t:"#FF671B"},{a:"COL",n:"Avalanche",bg:"#6F263D",t:"#236192"},{a:"CBJ",n:"Blue Jackets",bg:"#002654",t:"#CE1126"},
+                {a:"DAL",n:"Stars",bg:"#006847",t:"#8F8F8C"},{a:"DET",n:"Red Wings",bg:"#CE1126",t:"#FFF"},{a:"EDM",n:"Oilers",bg:"#041E42",t:"#FF4C00"},
+                {a:"FLA",n:"Panthers",bg:"#041E42",t:"#C8102E"},{a:"LA",n:"Kings",bg:"#111111",t:"#A2AAAD"},{a:"MIN",n:"Wild",bg:"#154734",t:"#A6192E"},
+                {a:"MTL",n:"Canadiens",bg:"#AF1E2D",t:"#192168"},{a:"NSH",n:"Predators",bg:"#FFB81C",t:"#041E42"},{a:"NJ",n:"Devils",bg:"#CE1126",t:"#000"},
+                {a:"NYI",n:"Islanders",bg:"#00539B",t:"#F47D30"},{a:"NYR",n:"Rangers",bg:"#0038A8",t:"#CE1126"},{a:"OTT",n:"Senators",bg:"#C52032",t:"#C2912C"},
+                {a:"PHI",n:"Flyers",bg:"#F74902",t:"#000"},{a:"PIT",n:"Penguins",bg:"#FCB514",t:"#000"},{a:"SJ",n:"Sharks",bg:"#006D75",t:"#EA7200"},
+                {a:"SEA",n:"Kraken",bg:"#001628",t:"#99D9D9"},{a:"STL",n:"Blues",bg:"#002F87",t:"#FCB514"},{a:"TB",n:"Lightning",bg:"#002868",t:"#FFF"},
+                {a:"TOR",n:"Maple Leafs",bg:"#00205B",t:"#FFF"},{a:"VAN",n:"Canucks",bg:"#00205B",t:"#00843D"},{a:"VGK",n:"Knights",bg:"#B4975A",t:"#333F42"},
+                {a:"WSH",n:"Capitals",bg:"#041E42",t:"#C8102E"},{a:"WPG",n:"Jets",bg:"#041E42",t:"#004C97"}
+            ],
+            ncaaf: [
+                // SEC
+                {a:"BAMA",n:"Alabama",bg:"#9E1B32",t:"#FFF"},{a:"AUB",n:"Auburn",bg:"#0C2340",t:"#E87722"},{a:"ARK",n:"Arkansas",bg:"#9D2235",t:"#FFF"},
+                {a:"FLA",n:"Florida",bg:"#0021A5",t:"#FA4616"},{a:"UGA",n:"Georgia",bg:"#BA0C2F",t:"#FFF"},{a:"UK",n:"Kentucky",bg:"#0033A0",t:"#FFF"},
+                {a:"LSU",n:"LSU",bg:"#461D7C",t:"#FDD023"},{a:"MISS",n:"Ole Miss",bg:"#CE1126",t:"#14213D"},{a:"MSST",n:"Miss State",bg:"#660000",t:"#FFF"},
+                {a:"MIZZ",n:"Missouri",bg:"#F1B82D",t:"#000"},{a:"SCAR",n:"S Carolina",bg:"#73000A",t:"#FFF"},{a:"TENN",n:"Tennessee",bg:"#FF8200",t:"#FFF"},
+                {a:"TXAM",n:"Texas A&M",bg:"#500000",t:"#FFF"},{a:"VANDY",n:"Vanderbilt",bg:"#866D4B",t:"#000"},{a:"TEX",n:"Texas",bg:"#BF5700",t:"#FFF"},
+                {a:"OU",n:"Oklahoma",bg:"#841617",t:"#FFF"},
+                // Big Ten
+                {a:"OSU",n:"Ohio State",bg:"#BB0000",t:"#FFF"},{a:"MICH",n:"Michigan",bg:"#00274C",t:"#FFCB05"},{a:"PSU",n:"Penn State",bg:"#041E42",t:"#FFF"},
+                {a:"MSU",n:"Michigan St",bg:"#18453B",t:"#FFF"},{a:"WISC",n:"Wisconsin",bg:"#C5050C",t:"#FFF"},{a:"IOWA",n:"Iowa",bg:"#FFCD00",t:"#000"},
+                {a:"MINN",n:"Minnesota",bg:"#7A0019",t:"#FFCC33"},{a:"NEB",n:"Nebraska",bg:"#E41C38",t:"#FFF"},{a:"ILL",n:"Illinois",bg:"#13294B",t:"#FF5F05"},
+                {a:"IU",n:"Indiana",bg:"#990000",t:"#FFF"},{a:"PUR",n:"Purdue",bg:"#CEB888",t:"#000"},{a:"NW",n:"Northwestern",bg:"#4E2A84",t:"#FFF"},
+                {a:"MARY",n:"Maryland",bg:"#E03a3e",t:"#FFD520"},{a:"RUT",n:"Rutgers",bg:"#CC0033",t:"#FFF"},{a:"UCLA",n:"UCLA",bg:"#2D68C4",t:"#F2A900"},
+                {a:"USC",n:"USC",bg:"#990000",t:"#FFC72C"},{a:"ORE",n:"Oregon",bg:"#154733",t:"#FEE123"},{a:"WASH",n:"Washington",bg:"#4B2E83",t:"#B7A57A"},
+                // ACC
+                {a:"FSU",n:"Florida St",bg:"#782F40",t:"#CEB888"},{a:"MIA",n:"Miami",bg:"#F47321",t:"#005030"},{a:"CLEM",n:"Clemson",bg:"#F56600",t:"#522D80"},
+                {a:"UNC",n:"North Carolina",bg:"#7BAFD4",t:"#13294B"},{a:"NCST",n:"NC State",bg:"#CC0000",t:"#FFF"},{a:"DUKE",n:"Duke",bg:"#003087",t:"#FFF"},
+                {a:"UVA",n:"Virginia",bg:"#232D4B",t:"#F84C1E"},{a:"VT",n:"Virginia Tech",bg:"#630031",t:"#CF4420"},{a:"LOU",n:"Louisville",bg:"#AD0000",t:"#FFF"},
+                {a:"SYR",n:"Syracuse",bg:"#F76900",t:"#FFF"},{a:"BC",n:"Boston College",bg:"#98002E",t:"#BC9B6A"},{a:"PITT",n:"Pittsburgh",bg:"#003594",t:"#FFB81C"},
+                {a:"GT",n:"Georgia Tech",bg:"#B3A369",t:"#003057"},{a:"WAKE",n:"Wake Forest",bg:"#9E7E38",t:"#000"},{a:"ND",n:"Notre Dame",bg:"#0C2340",t:"#C99700"},
+                {a:"SMU",n:"SMU",bg:"#0033A0",t:"#C8102E"},{a:"CAL",n:"Cal",bg:"#003262",t:"#FDB515"},{a:"STAN",n:"Stanford",bg:"#8C1515",t:"#FFF"},
+                // Big 12
+                {a:"KU",n:"Kansas",bg:"#0051BA",t:"#E8000D"},{a:"KSU",n:"Kansas St",bg:"#512888",t:"#FFF"},{a:"BAY",n:"Baylor",bg:"#154734",t:"#FFB81C"},
+                {a:"TCU",n:"TCU",bg:"#4D1979",t:"#FFF"},{a:"TTU",n:"Texas Tech",bg:"#CC0000",t:"#000"},{a:"WVU",n:"West Virginia",bg:"#002855",t:"#EAAA00"},
+                {a:"ISU",n:"Iowa State",bg:"#C8102E",t:"#F1BE48"},{a:"OKST",n:"Oklahoma St",bg:"#FF7300",t:"#000"},{a:"CIN",n:"Cincinnati",bg:"#E00122",t:"#000"},
+                {a:"UCF",n:"UCF",bg:"#BA9B37",t:"#000"},{a:"HOU",n:"Houston",bg:"#C8102E",t:"#FFF"},{a:"BYU",n:"BYU",bg:"#002E5D",t:"#FFF"},
+                {a:"ARIZ",n:"Arizona",bg:"#CC0033",t:"#003366"},{a:"ASU",n:"Arizona St",bg:"#8C1D40",t:"#FFC627"},{a:"COLO",n:"Colorado",bg:"#CFB87C",t:"#000"},
+                {a:"UTAH",n:"Utah",bg:"#CC0000",t:"#FFF"},
+                // Other Notable
+                {a:"ARMY",n:"Army",bg:"#000",t:"#D3BC8D"},{a:"NAVY",n:"Navy",bg:"#00205B",t:"#C5B783"},{a:"AF",n:"Air Force",bg:"#003087",t:"#8F8F8C"},
+                {a:"BSU",n:"Boise St",bg:"#0033A0",t:"#D64309"},{a:"SDSU",n:"San Diego St",bg:"#A6192E",t:"#000"},{a:"MEM",n:"Memphis",bg:"#003087",t:"#898D8D"},
+                {a:"USF",n:"South Florida",bg:"#006747",t:"#CFC493"},{a:"TULN",n:"Tulane",bg:"#006747",t:"#87CEEB"},{a:"SMiss",n:"Southern Miss",bg:"#FFAA3C",t:"#000"},
+                {a:"APP",n:"App State",bg:"#222",t:"#FFCC00"},{a:"JMAD",n:"James Madison",bg:"#450084",t:"#CBB677"},{a:"LIB",n:"Liberty",bg:"#002D62",t:"#C41230"}
+            ],
+            ncaab: [
+                // Blue Bloods
+                {a:"UK",n:"Kentucky",bg:"#0033A0",t:"#FFF"},{a:"DUKE",n:"Duke",bg:"#003087",t:"#FFF"},{a:"UNC",n:"North Carolina",bg:"#7BAFD4",t:"#13294B"},
+                {a:"KU",n:"Kansas",bg:"#0051BA",t:"#E8000D"},{a:"UCLA",n:"UCLA",bg:"#2D68C4",t:"#F2A900"},{a:"IU",n:"Indiana",bg:"#990000",t:"#FFF"},
+                // Top Programs
+                {a:"NOVA",n:"Villanova",bg:"#003366",t:"#FFF"},{a:"GONZ",n:"Gonzaga",bg:"#002967",t:"#C8102E"},{a:"UCONN",n:"UConn",bg:"#000E2F",t:"#FFF"},
+                {a:"MICH",n:"Michigan",bg:"#00274C",t:"#FFCB05"},{a:"MSU",n:"Michigan St",bg:"#18453B",t:"#FFF"},{a:"LOU",n:"Louisville",bg:"#AD0000",t:"#FFF"},
+                {a:"SYR",n:"Syracuse",bg:"#F76900",t:"#FFF"},{a:"ARIZ",n:"Arizona",bg:"#CC0033",t:"#003366"},{a:"MARY",n:"Maryland",bg:"#E03A3E",t:"#FFD520"},
+                // SEC
+                {a:"BAMA",n:"Alabama",bg:"#9E1B32",t:"#FFF"},{a:"AUB",n:"Auburn",bg:"#0C2340",t:"#E87722"},{a:"ARK",n:"Arkansas",bg:"#9D2235",t:"#FFF"},
+                {a:"TENN",n:"Tennessee",bg:"#FF8200",t:"#FFF"},{a:"FLA",n:"Florida",bg:"#0021A5",t:"#FA4616"},{a:"LSU",n:"LSU",bg:"#461D7C",t:"#FDD023"},
+                {a:"TEX",n:"Texas",bg:"#BF5700",t:"#FFF"},{a:"TXAM",n:"Texas A&M",bg:"#500000",t:"#FFF"},
+                // Big Ten
+                {a:"OSU",n:"Ohio State",bg:"#BB0000",t:"#FFF"},{a:"PUR",n:"Purdue",bg:"#CEB888",t:"#000"},{a:"IOWA",n:"Iowa",bg:"#FFCD00",t:"#000"},
+                {a:"ILL",n:"Illinois",bg:"#13294B",t:"#FF5F05"},{a:"WISC",n:"Wisconsin",bg:"#C5050C",t:"#FFF"},{a:"NW",n:"Northwestern",bg:"#4E2A84",t:"#FFF"},
+                // Big 12
+                {a:"BAY",n:"Baylor",bg:"#154734",t:"#FFB81C"},{a:"TTU",n:"Texas Tech",bg:"#CC0000",t:"#000"},{a:"TCU",n:"TCU",bg:"#4D1979",t:"#FFF"},
+                {a:"HOU",n:"Houston",bg:"#C8102E",t:"#FFF"},{a:"BYU",n:"BYU",bg:"#002E5D",t:"#FFF"},{a:"CIN",n:"Cincinnati",bg:"#E00122",t:"#000"},
+                // ACC
+                {a:"WAKE",n:"Wake Forest",bg:"#9E7E38",t:"#000"},{a:"VT",n:"Virginia Tech",bg:"#630031",t:"#CF4420"},{a:"MIA",n:"Miami",bg:"#F47321",t:"#005030"},
+                {a:"FSU",n:"Florida St",bg:"#782F40",t:"#CEB888"},{a:"CLEM",n:"Clemson",bg:"#F56600",t:"#522D80"},{a:"NCST",n:"NC State",bg:"#CC0000",t:"#FFF"},
+                {a:"PITT",n:"Pittsburgh",bg:"#003594",t:"#FFB81C"},{a:"ND",n:"Notre Dame",bg:"#0C2340",t:"#C99700"},
+                // Mid-Majors
+                {a:"SDST",n:"San Diego St",bg:"#A6192E",t:"#000"},{a:"MEM",n:"Memphis",bg:"#003087",t:"#898D8D"},{a:"XAVI",n:"Xavier",bg:"#0C2340",t:"#9EA2A2"},
+                {a:"CREIG",n:"Creighton",bg:"#005CA9",t:"#FFF"},{a:"MARQ",n:"Marquette",bg:"#003366",t:"#FFCC00"},{a:"SETON",n:"Seton Hall",bg:"#004488",t:"#FFF"},
+                {a:"PROV",n:"Providence",bg:"#000",t:"#C4CED4"},{a:"STJN",n:"St. John's",bg:"#D41B2C",t:"#FFF"},{a:"GTOWN",n:"Georgetown",bg:"#041E42",t:"#8D817B"},
+                {a:"DAYT",n:"Dayton",bg:"#CE1141",t:"#004B8D"},{a:"STMRY",n:"Saint Mary's",bg:"#003DA5",t:"#D50032"},{a:"LOYAL",n:"Loyola Chi",bg:"#6F2C3F",t:"#FDB913"},
+                {a:"VCU",n:"VCU",bg:"#F8B800",t:"#000"},{a:"WICH",n:"Wichita St",bg:"#000",t:"#FFCD00"}
+            ],
+            nfl: [
+                {a:"ARI",n:"Cardinals",bg:"#97233F",t:"#FFF"},{a:"ATL",n:"Falcons",bg:"#A71930",t:"#FFF"},{a:"BAL",n:"Ravens",bg:"#241773",t:"#9E7C0C"},
+                {a:"BUF",n:"Bills",bg:"#00338D",t:"#C60C30"},{a:"CAR",n:"Panthers",bg:"#0085CA",t:"#000"},{a:"CHI",n:"Bears",bg:"#0B162A",t:"#C83803"},
+                {a:"CIN",n:"Bengals",bg:"#FB4F14",t:"#000"},{a:"CLE",n:"Browns",bg:"#311D00",t:"#FF3C00"},{a:"DAL",n:"Cowboys",bg:"#003594",t:"#FFF"},
+                {a:"DEN",n:"Broncos",bg:"#FB4F14",t:"#002244"},{a:"DET",n:"Lions",bg:"#0076B6",t:"#B0B7BC"},{a:"GB",n:"Packers",bg:"#203731",t:"#FFB612"},
+                {a:"HOU",n:"Texans",bg:"#03202F",t:"#A71930"},{a:"IND",n:"Colts",bg:"#002C5F",t:"#FFF"},{a:"JAX",n:"Jaguars",bg:"#006778",t:"#D7A22A"},
+                {a:"KC",n:"Chiefs",bg:"#E31837",t:"#FFB81C"},{a:"LV",n:"Raiders",bg:"#000",t:"#A5ACAF"},{a:"LAC",n:"Chargers",bg:"#0080C6",t:"#FFC20E"},
+                {a:"LAR",n:"Rams",bg:"#003594",t:"#FFA300"},{a:"MIA",n:"Dolphins",bg:"#008E97",t:"#FC4C02"},{a:"MIN",n:"Vikings",bg:"#4F2683",t:"#FFC62F"},
+                {a:"NE",n:"Patriots",bg:"#002244",t:"#C60C30"},{a:"NO",n:"Saints",bg:"#D3BC8D",t:"#101820"},{a:"NYG",n:"Giants",bg:"#0B2265",t:"#A71930"},
+                {a:"NYJ",n:"Jets",bg:"#125740",t:"#FFF"},{a:"PHI",n:"Eagles",bg:"#004C54",t:"#A5ACAF"},{a:"PIT",n:"Steelers",bg:"#FFB612",t:"#101820"},
+                {a:"SF",n:"49ers",bg:"#AA0000",t:"#B3995D"},{a:"SEA",n:"Seahawks",bg:"#002244",t:"#69BE28"},{a:"TB",n:"Buccaneers",bg:"#D50A0A",t:"#FFF"},
+                {a:"TEN",n:"Titans",bg:"#0C2340",t:"#4B92DB"},{a:"WAS",n:"Commanders",bg:"#5A1414",t:"#FFB612"}
+            ]
+        };
+
+        // SAMPLE QUESTIONS - NBA, MLB, NHL, NCAAB, NCAAF only (1980-present)
+        const QUESTIONS = [
+            // NBA - Rookie
+            {q:"Which NBA team drafted Michael Jordan in 1984?",a:"Chicago Bulls",accept:["bulls","chicago bulls","chicago"],choices:["Chicago Bulls","Portland Trail Blazers","Houston Rockets","Philadelphia 76ers"],diff:"rookie",cat:"NBA"},
+            {q:"Who won the 2016 NBA Finals after coming back from a 3-1 deficit?",a:"Cleveland Cavaliers",accept:["cavaliers","cleveland cavaliers","cavs","cleveland"],choices:["Cleveland Cavaliers","Golden State Warriors","Miami Heat","San Antonio Spurs"],diff:"rookie",cat:"NBA"},
+            {q:"Which player is known as 'The Answer'?",a:"Allen Iverson",accept:["allen iverson","iverson","ai"],choices:["Allen Iverson","Kobe Bryant","Tracy McGrady","Steve Nash"],diff:"rookie",cat:"NBA"},
+            
+            // NBA - Veteran
+            {q:"Who hit 'The Shot' over Craig Ehlo in the 1989 NBA Playoffs?",a:"Michael Jordan",accept:["michael jordan","jordan","mj"],choices:["Michael Jordan","Larry Bird","Magic Johnson","Isiah Thomas"],diff:"veteran",cat:"NBA"},
+            {q:"Which team won the NBA Championship in the lockout-shortened 1999 season?",a:"San Antonio Spurs",accept:["spurs","san antonio spurs","san antonio"],choices:["San Antonio Spurs","New York Knicks","Indiana Pacers","Portland Trail Blazers"],diff:"veteran",cat:"NBA"},
+            {q:"Who was the first player to win back-to-back NBA MVP awards in the 21st century?",a:"Steve Nash",accept:["steve nash","nash"],choices:["Steve Nash","LeBron James","Tim Duncan","Kobe Bryant"],diff:"veteran",cat:"NBA"},
+            
+            // NBA - All-Pro
+            {q:"Who won NBA Finals MVP despite being on the losing team in 1969?",a:"Jerry West",accept:["jerry west","west"],choices:["Jerry West","Wilt Chamberlain","Elgin Baylor","Oscar Robertson"],diff:"allpro",cat:"NBA"},
+            {q:"What year did the NBA introduce the three-point line?",a:"1979",accept:["1979","79"],choices:["1979","1980","1977","1982"],diff:"allpro",cat:"NBA"},
+            
+            // MLB - Rookie
+            {q:"Which team broke the 'Curse of the Bambino' by winning the 2004 World Series?",a:"Boston Red Sox",accept:["red sox","boston red sox","boston"],choices:["Boston Red Sox","New York Yankees","Chicago Cubs","St. Louis Cardinals"],diff:"rookie",cat:"MLB"},
+            {q:"Who hit 73 home runs in a single season in 2001?",a:"Barry Bonds",accept:["barry bonds","bonds"],choices:["Barry Bonds","Mark McGwire","Sammy Sosa","Ken Griffey Jr."],diff:"rookie",cat:"MLB"},
+            {q:"Which team won the 2016 World Series, ending a 108-year championship drought?",a:"Chicago Cubs",accept:["cubs","chicago cubs","chicago"],choices:["Chicago Cubs","Cleveland Indians","Boston Red Sox","New York Mets"],diff:"rookie",cat:"MLB"},
+            
+            // MLB - Veteran
+            {q:"Who was named World Series MVP after the infamous 1985 'Denkinger Call' series?",a:"Bret Saberhagen",accept:["bret saberhagen","saberhagen"],choices:["Bret Saberhagen","George Brett","Frank White","Willie Wilson"],diff:"veteran",cat:"MLB"},
+            {q:"What year did Cal Ripken Jr. break Lou Gehrig's consecutive games played record?",a:"1995",accept:["1995","95"],choices:["1995","1994","1996","1993"],diff:"veteran",cat:"MLB"},
+            {q:"Which team completed a worst-to-first turnaround to win the 1991 World Series?",a:"Minnesota Twins",accept:["twins","minnesota twins","minnesota"],choices:["Minnesota Twins","Atlanta Braves","Toronto Blue Jays","Pittsburgh Pirates"],diff:"veteran",cat:"MLB"},
+            
+            // MLB - All-Pro
+            {q:"Who threw the only perfect game in World Series history?",a:"Don Larsen",accept:["don larsen","larsen"],choices:["Don Larsen","Sandy Koufax","Bob Gibson","Whitey Ford"],diff:"allpro",cat:"MLB"},
+            {q:"What was the score of the famous 1986 ALCS Game 5 when Dave Henderson hit his dramatic home run?",a:"5-4",accept:["5-4","5 to 4","five to four"],choices:["5-4","4-3","6-5","3-2"],diff:"allpro",cat:"MLB"},
+            
+            // NHL - Rookie
+            {q:"Which team did Wayne Gretzky play for when he retired in 1999?",a:"New York Rangers",accept:["rangers","new york rangers","ny rangers"],choices:["New York Rangers","Edmonton Oilers","Los Angeles Kings","St. Louis Blues"],diff:"rookie",cat:"NHL"},
+            {q:"Who scored 'The Golden Goal' for Canada in the 2010 Winter Olympics?",a:"Sidney Crosby",accept:["sidney crosby","crosby","sid"],choices:["Sidney Crosby","Jarome Iginla","Ryan Miller","Jonathan Toews"],diff:"rookie",cat:"NHL"},
+            {q:"Which team won the Stanley Cup in the 2019-2020 bubble playoffs?",a:"Tampa Bay Lightning",accept:["lightning","tampa bay lightning","tampa","tampa bay"],choices:["Tampa Bay Lightning","Dallas Stars","Vegas Golden Knights","Colorado Avalanche"],diff:"rookie",cat:"NHL"},
+            
+            // NHL - Veteran
+            {q:"Who scored the 'Easter Epic' overtime goal in 1987?",a:"Pat LaFontaine",accept:["pat lafontaine","lafontaine"],choices:["Pat LaFontaine","Bryan Trottier","Mike Bossy","Denis Potvin"],diff:"veteran",cat:"NHL"},
+            {q:"What year did the 'Miracle on Ice' occur at the Winter Olympics?",a:"1980",accept:["1980","80"],choices:["1980","1984","1976","1988"],diff:"veteran",cat:"NHL"},
+            {q:"Which goalie holds the NHL record for most career wins?",a:"Martin Brodeur",accept:["martin brodeur","brodeur"],choices:["Martin Brodeur","Patrick Roy","Terry Sawchuk","Ed Belfour"],diff:"veteran",cat:"NHL"},
+            
+            // NHL - All-Pro
+            {q:"Who scored the winning goal in the 1994 Stanley Cup Finals for the New York Rangers?",a:"Mark Messier",accept:["mark messier","messier"],choices:["Mark Messier","Brian Leetch","Adam Graves","Alexei Kovalev"],diff:"allpro",cat:"NHL"},
+            {q:"How many consecutive Stanley Cups did the New York Islanders win from 1980-1983?",a:"4",accept:["4","four"],choices:["4","3","5","2"],diff:"allpro",cat:"NHL"},
+            
+            // NCAAF - Rookie  
+            {q:"Which school has won the most college football national championships since 1980?",a:"Alabama",accept:["alabama","bama","crimson tide"],choices:["Alabama","Ohio State","Notre Dame","USC"],diff:"rookie",cat:"NCAAF"},
+            {q:"Who won the 2023 College Football Playoff National Championship?",a:"Michigan",accept:["michigan","wolverines","u of m"],choices:["Michigan","Washington","Alabama","Texas"],diff:"rookie",cat:"NCAAF"},
+            {q:"Which quarterback threw 'The Catch' to Dwight Clark in the 1981 NFC Championship?",a:"Joe Montana",accept:["joe montana","montana"],choices:["Joe Montana","Steve Young","Phil Simms","Dan Fouts"],diff:"rookie",cat:"NCAAF"},
+            
+            // NCAAF - Veteran
+            {q:"What year did the BCS replace the Bowl Coalition system?",a:"1998",accept:["1998","98"],choices:["1998","2000","1996","1999"],diff:"veteran",cat:"NCAAF"},
+            {q:"Who won the Heisman Trophy in 2007 as a sophomore?",a:"Tim Tebow",accept:["tim tebow","tebow"],choices:["Tim Tebow","Darren McFadden","Colt Brennan","Chase Daniel"],diff:"veteran",cat:"NCAAF"},
+            {q:"Which team completed the first 15-0 perfect season in FBS history in 2018?",a:"Clemson",accept:["clemson","clemson tigers"],choices:["Clemson","Alabama","Ohio State","Georgia"],diff:"veteran",cat:"NCAAF"},
+            
+            // NCAAF - All-Pro
+            {q:"Who kicked the famous 'Kick Six' return in the 2013 Iron Bowl?",a:"Chris Davis",accept:["chris davis","davis"],choices:["Chris Davis","Amari Cooper","AJ McCarron","Tre Mason"],diff:"allpro",cat:"NCAAF"},
+            {q:"What was the final score of the 2006 Rose Bowl between Texas and USC?",a:"41-38",accept:["41-38","41 to 38"],choices:["41-38","35-28","38-35","42-35"],diff:"allpro",cat:"NCAAF"},
+            
+            // NCAAB - Rookie
+            {q:"Which school won back-to-back NCAA Men's Basketball Championships in 2006-2007?",a:"Florida",accept:["florida","gators","florida gators"],choices:["Florida","Duke","North Carolina","UCLA"],diff:"rookie",cat:"NCAAB"},
+            {q:"Who hit 'The Shot' to win the 2016 NCAA Championship for Villanova?",a:"Kris Jenkins",accept:["kris jenkins","jenkins"],choices:["Kris Jenkins","Ryan Arcidiacono","Josh Hart","Jalen Brunson"],diff:"rookie",cat:"NCAAB"},
+            {q:"Which team is known for their 'One Shining Moment' upset as a 16-seed over a 1-seed in 2018?",a:"UMBC",accept:["umbc","maryland baltimore county"],choices:["UMBC","Fairleigh Dickinson","Norfolk State","Lehigh"],diff:"rookie",cat:"NCAAB"},
+            
+            // NCAAB - Veteran
+            {q:"Who coached Duke to their first NCAA Championship in 1991?",a:"Mike Krzyzewski",accept:["mike krzyzewski","krzyzewski","coach k"],choices:["Mike Krzyzewski","Dean Smith","Bobby Knight","Jim Boeheim"],diff:"veteran",cat:"NCAAB"},
+            {q:"What year did the NCAA Tournament expand to 64 teams?",a:"1985",accept:["1985","85"],choices:["1985","1979","1988","1982"],diff:"veteran",cat:"NCAAB"},
+            {q:"Which player scored 44 points in the 1983 NCAA Championship game for Houston?",a:"Hakeem Olajuwon",accept:["hakeem olajuwon","olajuwon","akeem"],choices:["Hakeem Olajuwon","Clyde Drexler","Michael Young","Lorenzo Charles"],diff:"veteran",cat:"NCAAB"},
+            
+            // NCAAB - All-Pro
+            {q:"What was the final score of Duke's upset of UNLV in the 1991 Final Four?",a:"79-77",accept:["79-77","79 to 77"],choices:["79-77","77-75","82-80","73-71"],diff:"allpro",cat:"NCAAB"},
+            {q:"Who hit the game-winning shot for Lorenzo Charles to dunk in the 1983 NCAA Championship?",a:"Dereck Whittenburg",accept:["dereck whittenburg","whittenburg"],choices:["Dereck Whittenburg","Sidney Lowe","Thurl Bailey","Terry Gannon"],diff:"allpro",cat:"NCAAB"}
+        ];
+
+        const ACHIEVEMENTS = [
+            {id:"first",icon:"🎯",name:"First Game",desc:"Complete your first trivia game",check:u=>u.gamesPlayed>=1},
+            {id:"perfect",icon:"👑",name:"Perfect Game",desc:"Get 10/10 on a daily quiz",check:u=>u.perfectCount>=1},
+            {id:"five",icon:"🏅",name:"High Five",desc:"Play 5 games",check:u=>u.gamesPlayed>=5},
+            {id:"streak7",icon:"🔥",name:"Week Warrior",desc:"Play 7 days in a row",check:u=>u.dayStreak>=7},
+            {id:"streak30",icon:"💎",name:"Monthly Master",desc:"Play 30 days in a row",check:u=>u.dayStreak>=30},
+            {id:"perfect5",icon:"🏆",name:"Perfectionist",desc:"Get 5 perfect games",check:u=>u.perfectCount>=5}
+        ];
+
+        let game={qNum:0,correct:0,streak:0,lifelines:2,time:25,timer:null,answered:false,mcMode:false,results:[],dayQuestions:[]};
+        let user={name:"Guest",email:null,team:null,loggedIn:false,gamesPlayed:0,bestScore:0,perfectCount:0,dayStreak:0,lastPlayed:null,lastScore:null,joinDate:null};
+
+        function getDayQuestions(){
+            const d=new Date(),seed=d.getFullYear()*10000+d.getMonth()*100+d.getDate();
+            const shuffled=[...QUESTIONS].sort((a,b)=>((seed*a.q.length)%100)-((seed*b.q.length)%100));
+            const rookie=shuffled.filter(q=>q.diff==='rookie').slice(0,3);
+            const veteran=shuffled.filter(q=>q.diff==='veteran').slice(0,4);
+            const allpro=shuffled.filter(q=>q.diff==='allpro').slice(0,3);
+            return[...rookie,...veteran,...allpro];
+        }
+
+        function fuzzy(input,targets){const n=input.toLowerCase().trim();for(const t of targets)if(n===t.toLowerCase())return true;for(const t of targets){const d=lev(n,t.toLowerCase()),m=Math.max(n.length,t.length);if((1-d/m)>=(t.length<=4?.9:.75))return true}return false}
+        function lev(a,b){const m=[];for(let i=0;i<=b.length;i++)m[i]=[i];for(let j=0;j<=a.length;j++)m[0][j]=j;for(let i=1;i<=b.length;i++)for(let j=1;j<=a.length;j++)m[i][j]=b[i-1]===a[j-1]?m[i-1][j-1]:Math.min(m[i-1][j-1]+1,m[i][j-1]+1,m[i-1][j]+1);return m[b.length][a.length]}
+        function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>t.classList.remove('show'),3000)}
+        function formatDate(){return new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+        function openSocial(p){const urls={twitter:'https://twitter.com/ontheclock',instagram:'https://instagram.com/ontheclock',tiktok:'https://tiktok.com/@ontheclock'};window.open(urls[p],'_blank')}
+
+        function updateUI(){
+            const logged=user.loggedIn;
+            document.getElementById('login-btn').style.display=logged?'none':'flex';
+            document.getElementById('signup-btn').style.display=logged?'none':'flex';
+            document.getElementById('avatar-btn').style.display=logged?'flex':'none';
+            document.getElementById('login-prompt').style.display=logged?'none':'block';
+            document.getElementById('streak-display').style.display=logged?'flex':'none';
+            if(logged){
+                document.getElementById('home-streak').textContent=user.dayStreak;
+                document.getElementById('home-perfects').textContent=user.perfectCount;
+                if(user.team){
+                    const ab=document.getElementById('avatar-btn');
+                    ab.style.background=user.team.bg;
+                    ab.style.color=user.team.t;
+                    document.getElementById('avatar-text').textContent=user.team.a;
+                }
+                const today=new Date().toDateString();
+                if(user.lastPlayed===today){
+                    document.getElementById('played-card').style.display='block';
+                    document.getElementById('played-score').textContent=user.lastScore+'/10';
+                    document.getElementById('play-btn').disabled=true;
+                    document.getElementById('play-btn').textContent='PLAYED TODAY';
+                }else{
+                    document.getElementById('played-card').style.display='none';
+                    document.getElementById('play-btn').disabled=false;
+                    document.getElementById('play-btn').textContent='PLAY NOW';
+                }
+            }
+        }
+
+        function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(n+'-screen').classList.add('active');if(n==='leaderboard')renderLB('daily');if(n==='profile')renderProfile()}
+
+        function renderProfile(){
+            document.getElementById('stat-games').textContent=user.gamesPlayed;
+            document.getElementById('stat-best').textContent=user.bestScore;
+            document.getElementById('stat-perfects').textContent=user.perfectCount;
+            document.getElementById('stat-streak').textContent=user.dayStreak;
+            document.getElementById('profile-name').textContent=user.name;
+            document.getElementById('profile-joined').textContent='Playing since '+(user.joinDate||'today');
+            if(user.team){
+                const av=document.getElementById('profile-avatar');
+                av.style.background=user.team.bg;
+                av.style.color=user.team.t;
+                av.textContent=user.team.a;
+            }
+            let html='<h3 class="achievements-title">Achievements</h3>';
+            ACHIEVEMENTS.forEach(a=>{
+                const unlocked=a.check(user);
+                html+=`<div class="achievement-item ${unlocked?'unlocked':'locked'}"><span class="achievement-icon">${a.icon}</span><div class="achievement-info"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.desc}</div></div>${unlocked?'<span style="color:var(--gold)">✓</span>':''}</div>`;
+            });
+            document.getElementById('achievements').innerHTML=html;
+        }
+
+        function startGame(){
+            if(!user.loggedIn){showAuthModal('signup');toast('Create an account to play!','error');return}
+            const today=new Date().toDateString();
+            if(user.lastPlayed===today){toast('Already played today!','error');return}
+            game={qNum:0,correct:0,streak:0,lifelines:2,time:25,timer:null,answered:false,mcMode:false,results:[],dayQuestions:getDayQuestions()};
+            showScreen('game');loadQ();
+        }
+
+        function loadQ(){
+            const q=game.dayQuestions[game.qNum];
+            document.getElementById('q-counter').textContent=`Question ${game.qNum+1} of 10`;
+            document.getElementById('q-text').textContent=q.q;
+            const b=document.getElementById('diff-badge');b.className='difficulty-badge difficulty-'+q.diff;b.textContent=q.diff==='allpro'?'All-Pro':q.diff.charAt(0).toUpperCase()+q.diff.slice(1);
+            const inp=document.getElementById('answer-input');inp.value='';inp.className='answer-input';inp.disabled=false;inp.focus();
+            game.mcMode=false;document.getElementById('type-container').style.display='block';document.getElementById('mc-container').classList.remove('active');
+            document.getElementById('lifeline-btn').disabled=game.lifelines===0;document.getElementById('lifeline-count').textContent=game.lifelines;
+            updateGameScore();game.answered=false;game.time=25;startTimer();
+        }
+
+        function startTimer(){
+            clearInterval(game.timer);const p=document.getElementById('timer-progress'),txt=document.getElementById('timer-text'),c=2*Math.PI*46;
+            p.style.strokeDasharray=c;p.style.strokeDashoffset=0;
+            game.timer=setInterval(()=>{
+                if(game.answered){clearInterval(game.timer);return}
+                game.time-=0.1;if(game.time<=0){game.time=0;clearInterval(game.timer);timeout()}
+                txt.textContent=Math.ceil(game.time);
+                p.style.strokeDashoffset=(1-game.time/25)*c;
+                p.style.stroke=game.time<=5?'var(--danger)':game.time<=10?'var(--warning)':'var(--success)';
+            },100);
+        }
+
+        function submitAnswer(){
+            if(game.answered)return;
+            const a=document.getElementById('answer-input').value.trim();
+            if(!a){toast('Enter an answer!','error');return}
+            process(fuzzy(a,game.dayQuestions[game.qNum].accept),a);
+        }
+
+        function process(correct,answer){
+            game.answered=true;clearInterval(game.timer);
+            const q=game.dayQuestions[game.qNum];
+            if(correct){game.correct++;game.streak++}else{game.streak=0}
+            game.results.push({q:q.q,correct,user:answer,ans:q.a});
+            feedback(correct,q.a);
+            const inp=document.getElementById('answer-input');inp.disabled=true;inp.classList.add(correct?'correct':'incorrect');
+        }
+
+        function timeout(){const q=game.dayQuestions[game.qNum];game.results.push({q:q.q,correct:false,user:'(Time)',ans:q.a});game.streak=0;feedback(false,q.a,true)}
+
+        function feedback(correct,answer,timeout=false){
+            const o=document.getElementById('feedback-overlay'),ic=document.getElementById('fb-icon'),tx=document.getElementById('fb-text'),an=document.getElementById('fb-answer');
+            if(correct){ic.textContent='✓';ic.style.color='var(--success)';tx.textContent='CORRECT!';an.textContent=''}
+            else{ic.textContent=timeout?'⏱️':'✗';ic.style.color='var(--danger)';tx.textContent=timeout?"TIME'S UP!":'INCORRECT';an.textContent='Answer: '+answer}
+            o.classList.add('active');
+            setTimeout(()=>{o.classList.remove('active');an.textContent='';game.qNum++;game.qNum>=10?endGame():loadQ()},1500);
+        }
+
+        function useLifeline(){
+            if(game.lifelines===0||game.mcMode)return;
+            game.lifelines--;game.mcMode=true;
+            document.getElementById('lifeline-btn').disabled=true;document.getElementById('lifeline-count').textContent=game.lifelines;
+            document.getElementById('type-container').style.display='none';document.getElementById('mc-container').classList.add('active');
+            const q=game.dayQuestions[game.qNum];
+            document.querySelectorAll('.choice-btn').forEach((b,i)=>{b.textContent=q.choices[i];b.className='choice-btn';b.disabled=false;b.onclick=()=>selectChoice(i)});
+        }
+
+        function selectChoice(i){
+            if(game.answered)return;
+            const q=game.dayQuestions[game.qNum],correct=q.choices[i]===q.a;
+            document.querySelectorAll('.choice-btn').forEach((b,j)=>{b.disabled=true;if(q.choices[j]===q.a)b.classList.add('correct');else if(j===i&&!correct)b.classList.add('incorrect')});
+            process(correct,q.choices[i]);
+        }
+
+        function updateGameScore(){document.getElementById('game-score').textContent=game.correct+'/'+game.qNum;document.getElementById('game-streak').textContent=game.streak}
+
+        function endGame(){
+            const today=new Date().toDateString();
+            user.lastPlayed=today;user.lastScore=game.correct;user.gamesPlayed++;
+            if(game.correct>user.bestScore)user.bestScore=game.correct;
+            if(game.correct===10)user.perfectCount++;
+            user.dayStreak++;
+            saveUser();
+            showScreen('results');
+            document.getElementById('results-date').textContent=formatDate();
+            document.getElementById('final-score').textContent=game.correct+'/10';
+            const msg=document.getElementById('score-msg'),pb=document.getElementById('perfect-badge');
+            if(game.correct===10){msg.textContent='You Know Ball!';pb.style.display='inline-flex'}else{msg.textContent=game.correct>=8?'Great job!':game.correct>=5?'Not bad!':'Keep practicing!';pb.style.display='none'}
+            document.getElementById('recap-list').innerHTML=game.results.map((r,i)=>`<div class="recap-item"><span class="recap-icon ${r.correct?'correct':'incorrect'}">${r.correct?'✓':'✗'}</span><span class="recap-question">Q${i+1}: ${r.q.substring(0,35)}...</span></div>`).join('');
+            updateNextTimer();updateUI();
+        }
+
+        function updateNextTimer(){
+            const n=new Date(),t=new Date(n);t.setDate(t.getDate()+1);t.setHours(0,0,0,0);
+            const d=t-n,h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
+            document.getElementById('next-time').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            setTimeout(updateNextTimer,1000);
+        }
+
+        function shareGame(){
+            const t=`🏀 On The Clock - Daily Sports Trivia\n\nDo You Know Ball? Test your sports knowledge!\n\nPlay: otc.game`;
+            if(navigator.share)navigator.share({title:'On The Clock',text:t});else{navigator.clipboard.writeText(t);toast('Link copied!','success')}
+        }
+
+        function showShareModal(){
+            document.getElementById('share-score').textContent=game.correct+'/10';
+            document.getElementById('share-emoji').innerHTML=game.results.map(r=>`<span>${r.correct?'🟩':'🟥'}</span>`).join('');
+            document.getElementById('share-modal').classList.add('active');
+        }
+        function closeShareModal(){document.getElementById('share-modal').classList.remove('active')}
+        function getShareText(){return `🏀 ON THE CLOCK\n\n${game.results.map(r=>r.correct?'🟩':'🟥').join('')}\n\nScore: ${game.correct}/10${game.correct===10?' 👑':''}\n\nDo You Know Ball?\nPlay: otc.game`}
+        function copyShare(){navigator.clipboard.writeText(getShareText());toast('Copied!','success');closeShareModal()}
+        function nativeShare(){if(navigator.share)navigator.share({text:getShareText()});closeShareModal()}
+
+        function genLB(n,type){
+            const names=["BallKnower99","SportsGuru","TriviaMaster","GridironKing","HoopsHead","DiamondDan","IceQueen","TouchdownTom","SluggerSam","NetNinja","CourtVision","DunkMaster"];
+            const allTeams=[...TEAMS.nba,...TEAMS.mlb,...TEAMS.nhl];
+            return Array(n).fill().map((_,i)=>{
+                const team=allTeams[Math.floor(Math.random()*allTeams.length)];
+                const perfects=type==='perfects'?Math.max(50-i*2,1):Math.floor(Math.random()*20);
+                return{rank:i+1,name:names[i%names.length]+(i>=names.length?Math.floor(i/names.length):''),score:type==='daily'?Math.max(10-Math.floor(i/3),5):type==='perfects'?perfects:Math.floor(Math.random()*500)+(100-i)*10,perfects,team,perfect:type==='daily'&&i<3};
+            });
+        }
+        const LB={daily:genLB(100,'daily'),monthly:genLB(100,'monthly'),yearly:genLB(100,'yearly'),perfects:genLB(100,'perfects')};
+
+        function renderLB(period){
+            document.querySelectorAll('.leaderboard-tab').forEach(t=>t.classList.toggle('active',t.dataset.p===period));
+            const d=LB[period];const isPerfects=period==='perfects';
+            document.getElementById('lb-list').innerHTML=d.slice(0,100).map((p,i)=>{
+                const crown=(period!=='daily'&&i===0)||(period==='daily'&&p.perfect);
+                const meta=p.perfects>0?`👑 ${p.perfects} perfect game${p.perfects>1?'s':''}`:'';
+                const score=period==='daily'?p.score+'/10':isPerfects?p.perfects:p.score;
+                return`<div class="leaderboard-item ${i<3?'top-3':''}"><span class="rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${p.rank}</span><div class="lb-avatar" style="background:${p.team.bg};color:${p.team.t}">${p.team.a}</div><div class="lb-info"><div class="lb-name">${p.name}${crown?'<span style="font-size:14px">👑</span>':''}</div>${meta?`<div class="lb-meta">${meta}</div>`:''}</div><div class="lb-score">${score}</div></div>`;
+            }).join('');
+        }
+
+        function showTeamModal(){
+            document.getElementById('team-modal').classList.add('active');
+            document.getElementById('league-tabs').innerHTML=Object.keys(TEAMS).map((l,i)=>`<button class="league-tab ${i===0?'active':''}" data-l="${l}">${l.toUpperCase()}</button>`).join('');
+            document.querySelectorAll('#league-tabs .league-tab').forEach(t=>t.onclick=()=>renderTeams(t.dataset.l));
+            renderTeams('nba');
+        }
+        function closeTeamModal(){document.getElementById('team-modal').classList.remove('active')}
+        function renderTeams(league){
+            document.querySelectorAll('#league-tabs .league-tab').forEach(t=>t.classList.toggle('active',t.dataset.l===league));
+            document.getElementById('team-grid').innerHTML=TEAMS[league].map(t=>{
+                const sel=user.team&&user.team.a===t.a&&user.team.bg===t.bg;
+                return`<button class="team-btn ${sel?'selected':''}" onclick="selectTeam('${t.a}','${t.n}','${t.bg}','${t.t}')"><div class="team-circle" style="background:${t.bg};color:${t.t}">${t.a}</div><span class="team-name">${t.n}</span></button>`;
+            }).join('');
+        }
+        function selectTeam(a,n,bg,t){user.team={a,n,bg,t};saveUser();updateUI();renderProfile();closeTeamModal();toast('Team updated!','success')}
+
+        function showAuthModal(m){document.getElementById('auth-modal').classList.add('active');switchAuth(m)}
+        function closeAuthModal(){document.getElementById('auth-modal').classList.remove('active')}
+        function switchAuth(m){document.getElementById('auth-title').textContent=m==='signup'?'CREATE PROFILE':'WELCOME BACK';document.getElementById('signup-form').style.display=m==='signup'?'flex':'none';document.getElementById('login-form').style.display=m==='login'?'flex':'none'}
+
+        function handleSignup(){
+            const u=document.getElementById('signup-user').value,e=document.getElementById('signup-email').value,p=document.getElementById('signup-pass').value;
+            if(!u||!e||!p){toast('Fill all fields','error');return}
+            user.name=u;user.email=e;user.loggedIn=true;user.joinDate=formatDate();user.lastPlayed=null;
+            saveUser();updateUI();closeAuthModal();toast('Profile created!','success');
+        }
+
+        function handleLogin(){
+            const e=document.getElementById('login-email').value,p=document.getElementById('login-pass').value;
+            if(!e||!p){toast('Fill all fields','error');return}
+            const saved=localStorage.getItem('otc_'+e);
+            if(saved)user=JSON.parse(saved);else{user.email=e;user.name=e.split('@')[0];user.joinDate=formatDate()}
+            user.loggedIn=true;saveUser();updateUI();closeAuthModal();toast('Welcome back!','success');
+        }
+
+        function socialAuth(p){toast(p+' coming soon!','error')}
+        function saveUser(){if(user.email)localStorage.setItem('otc_'+user.email,JSON.stringify(user))}
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            document.getElementById('answer-input').addEventListener('keypress',e=>{if(e.key==='Enter')submitAnswer()});
+            document.querySelectorAll('.leaderboard-tab').forEach(t=>t.onclick=()=>renderLB(t.dataset.p));
+            document.getElementById('auth-modal').onclick=e=>{if(e.target.id==='auth-modal')closeAuthModal()};
+            document.getElementById('team-modal').onclick=e=>{if(e.target.id==='team-modal')closeTeamModal()};
+            document.getElementById('share-modal').onclick=e=>{if(e.target.id==='share-modal')closeShareModal()};
+            document.getElementById('daily-badge').textContent=formatDate();
+            updateUI();
+            let ht;document.querySelector('.logo').onmousedown=()=>{ht=setTimeout(()=>{user.lastPlayed=null;saveUser();updateUI();toast('Reset!','success')},3000)};
+            document.querySelector('.logo').onmouseup=()=>clearTimeout(ht);
+        });
+    </script>
+</body>
+</html>
