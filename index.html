@@ -365,7 +365,7 @@
     </div>
     <div class="feedback-overlay" id="feedback-overlay"><div class="feedback-content"><div class="feedback-icon" id="fb-icon">✓</div><div class="feedback-text" id="fb-text">CORRECT!</div><div class="feedback-answer" id="fb-answer"></div></div></div>
     <div class="team-modal" id="team-modal"><div class="team-modal-content"><div class="modal-header"><h3 class="modal-title">CHOOSE YOUR ICON</h3><button class="modal-close" onclick="closeTeamModal()">×</button></div><div class="league-tabs" id="league-tabs"></div><div class="team-grid" id="team-grid"></div></div></div>
-    <div class="modal-overlay" id="auth-modal"><div class="modal-content"><div class="modal-header"><h3 class="modal-title" id="auth-title">WELCOME BACK</h3><button class="modal-close" onclick="closeAuthModal()">×</button></div><div class="auth-form" id="signup-form" style="display:none"><div class="form-group"><label class="form-label">Username</label><input type="text" class="form-input" id="signup-user" placeholder="Username"></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="signup-email" placeholder="Email"></div><div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="signup-pass" placeholder="Password"></div><button type="button" class="btn-primary" onclick="handleSignup()">CREATE PROFILE</button><p class="auth-switch">Have an account? <button type="button" class="auth-link" onclick="switchAuth('login')">Log in</button></p></div><div class="auth-form" id="login-form"><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="login-email" placeholder="Email"></div><div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="login-pass" placeholder="Password"></div><button type="button" class="btn-primary" onclick="handleLogin()">LOG IN</button><p class="auth-forgot"><button type="button" class="auth-link" onclick="switchAuth('forgot')">Forgot your password?</button></p><p class="auth-switch">No account? <button type="button" class="auth-link" onclick="switchAuth('signup')">Sign up</button></p></div><div class="auth-form" id="forgot-form" style="display:none"><p class="forgot-desc">Enter your email and we'll send you a link to reset your password.</p><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="forgot-email" placeholder="Email"></div><button type="button" class="btn-primary" onclick="handleForgotPassword()">SEND RESET LINK</button><p class="auth-switch"><button type="button" class="auth-link" onclick="switchAuth('login')">← Back to login</button></p></div></div></div>
+    <div class="modal-overlay" id="auth-modal"><div class="modal-content"><div class="modal-header"><h3 class="modal-title" id="auth-title">WELCOME BACK</h3><button class="modal-close" onclick="closeAuthModal()">×</button></div><div class="auth-form" id="signup-form" style="display:none"><div class="form-group"><label class="form-label">Username</label><input type="text" class="form-input" id="signup-user" placeholder="Username"></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="signup-email" placeholder="Email"></div><div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="signup-pass" placeholder="Password"></div><button type="button" class="btn-primary" onclick="handleSignup()">CREATE PROFILE</button><p class="auth-switch">Have an account? <button type="button" class="auth-link" onclick="switchAuth('login')">Log in</button></p></div><div class="auth-form" id="login-form"><div class="form-group"><label class="form-label">Email or Username</label><input type="text" class="form-input" id="login-email" placeholder="Email or Username"></div><div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="login-pass" placeholder="Password"></div><button type="button" class="btn-primary" onclick="handleLogin()">LOG IN</button><p class="auth-forgot"><button type="button" class="auth-link" onclick="switchAuth('forgot')">Forgot your password?</button></p><p class="auth-switch">No account? <button type="button" class="auth-link" onclick="switchAuth('signup')">Sign up</button></p></div><div class="auth-form" id="forgot-form" style="display:none"><p class="forgot-desc">Enter your email and we'll send you a link to reset your password.</p><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="forgot-email" placeholder="Email"></div><button type="button" class="btn-primary" onclick="handleForgotPassword()">SEND RESET LINK</button><p class="auth-switch"><button type="button" class="auth-link" onclick="switchAuth('login')">← Back to login</button></p></div></div></div>
     <div class="share-modal" id="share-modal"><div class="share-preview"><div class="share-header"><div class="share-logo">OTC</div><span class="share-title">ON THE CLOCK</span></div><div class="share-score-box"><div class="share-score-value" id="share-score">0/10</div><div class="share-score-label">Today's Score</div></div><div class="share-emoji" id="share-emoji"></div><div class="share-tagline">DO YOU KNOW BALL?</div><div class="share-buttons"><button class="btn-primary" onclick="copyShare()">📋 Copy to Clipboard</button></div><button class="share-close" onclick="closeShareModal()">Close</button></div></div>
     <div class="modal-overlay" id="user-profile-modal"><div class="modal-content user-profile-content"><button class="modal-close" onclick="closeUserProfile()">×</button><div class="user-profile-header"><div class="user-profile-avatar" id="up-avatar">?</div><h2 class="user-profile-name" id="up-name">Player</h2><p class="user-profile-bio" id="up-bio">Just here to prove I know ball. 🏀</p></div><div class="user-profile-ranking"><div class="ranking-card highlight"><div class="ranking-label">All-Time Rank</div><div class="ranking-value" id="up-rank">#1</div></div><div class="ranking-card"><div class="ranking-label">Total Points</div><div class="ranking-value" id="up-points">0</div></div></div><div class="user-profile-stats"><div class="stat-card"><div class="stat-value" id="up-games">0</div><div class="stat-label">Games</div></div><div class="stat-card"><div class="stat-value" id="up-best">0</div><div class="stat-label">Best</div></div><div class="stat-card"><div class="stat-value" id="up-perfects">0</div><div class="stat-label">Perfect</div></div></div><div class="user-profile-achievements" id="up-achievements"></div></div></div>
     <div class="toast" id="toast"></div>
@@ -792,33 +792,11 @@ function closeShareModal(){document.getElementById('share-modal').classList.remo
 function copyShare(){navigator.clipboard.writeText(`🏀 ON THE CLOCK\n${game.results.map(r=>r.correct?'🟩':'🟥').join('')}\nScore: ${game.correct}/10\n\notc.game`);toast('Copied!','success');closeShareModal()}
 
 // Mock leaderboard data (fallback when no real data exists)
-function genLB(n,type){
-    const names=["BallKnower","SportsGuru","TriviaMaster","HoopsHead","GridironGod","DiamondKing","PuckMaster","CourtVision","StatGeek","ChampChaser"];
-    const bios=["Just here to prove I know ball. 🏀","Sports is life. Everything else is just details.","If it's not sports, I don't care.","Living for game day. 🏆","Trivia champion in training."];
-    const allTeams=[...TEAMS.nba,...TEAMS.mlb,...TEAMS.nfl,...GENERIC_ICONS];
-    const data=Array(n).fill().map((_,i)=>({
-        name:names[i%names.length]+(i>=names.length?Math.floor(i/names.length):''),
-        score:type==='daily'?Math.floor(Math.random()*6)+5:
-              type==='monthly'?Math.floor(Math.random()*200)+100:
-              type==='yearly'?Math.floor(Math.random()*2000)+1000:
-              type==='alltime'?Math.floor(Math.random()*8000)+2000:
-              Math.floor(Math.random()*20)+5,
-        team:allTeams[Math.floor(Math.random()*allTeams.length)],
-        gamesPlayed:type==='alltime'?Math.floor(Math.random()*500)+100:Math.floor(Math.random()*50)+10,
-        bestScore:Math.floor(Math.random()*3)+8,
-        perfectCount:type==='perfects'?Math.floor(Math.random()*50)+1:Math.floor(Math.random()*10),
-        totalPoints:Math.floor(Math.random()*5000)+5000,
-        bio:bios[i%bios.length]
-    }));
-    if(type==='perfects'){data.sort((a,b)=>b.perfectCount-a.perfectCount)}
-    else{data.sort((a,b)=>b.score-a.score)}
-    data.forEach((p,i)=>{p.rank=i+1;p.perfect=type==='perfects'||(type==='daily'&&i<3)});
-    return data;
-}
-const mockLB={daily:genLB(100,'daily'),monthly:genLB(100,'monthly'),yearly:genLB(100,'yearly'),alltime:genLB(100,'alltime'),perfects:genLB(100,'perfects')};
-
 async function fetchLeaderboard(period){
-    if(!sb)return mockLB[period];
+    if(!sb){
+        console.error('Supabase not initialized');
+        return [];
+    }
     const viewName={
         daily:'leaderboard_daily',
         monthly:'leaderboard_monthly',
@@ -827,8 +805,11 @@ async function fetchLeaderboard(period){
         perfects:'leaderboard_perfects'
     }[period];
     try{
+        console.log('Fetching leaderboard:', viewName);
         const {data,error}=await sb.from(viewName).select('*').limit(100);
-        if(error||!data||data.length===0)return mockLB[period];
+        console.log('Leaderboard response:', data, error);
+        if(error){console.error('Leaderboard error:',error);return []}
+        if(!data||data.length===0)return [];
         return data.map(p=>({
             rank:p.rank,
             name:p.username,
@@ -842,7 +823,7 @@ async function fetchLeaderboard(period){
         }));
     }catch(e){
         console.error('Leaderboard fetch error:',e);
-        return mockLB[period];
+        return [];
     }
 }
 
@@ -850,6 +831,10 @@ async function renderLB(period){
     document.querySelectorAll('.leaderboard-tab').forEach(t=>t.classList.toggle('active',t.dataset.p===period));
     document.getElementById('lb-list').innerHTML='<div style="text-align:center;padding:40px;opacity:.6">Loading...</div>';
     const d=await fetchLeaderboard(period);
+    if(d.length===0){
+        document.getElementById('lb-list').innerHTML='<div style="text-align:center;padding:40px;opacity:.6">No scores yet. Be the first to play!</div>';
+        return;
+    }
     document.getElementById('lb-list').innerHTML=d.map((p,i)=>{
         const avatar=p.team.svg?p.team.svg:p.team.a;
         const playerData=JSON.stringify(p).replace(/"/g,'&quot;');
@@ -977,14 +962,32 @@ async function handleSignup(){
 }
 
 async function handleLogin(){
-    const e=document.getElementById('login-email').value.trim().toLowerCase();
+    console.log('handleLogin called');
+    const input=document.getElementById('login-email').value.trim();
     const p=document.getElementById('login-pass').value;
-    if(!e||!p){toast('Fill all fields','error');return}
-    if(!validateEmail(e)){toast('Please enter a valid email address','error');return}
+    console.log('Input:', input, 'Pass length:', p?.length);
+    if(!input||!p){toast('Fill all fields','error');return}
     if(!sb){toast('Connection error. Please refresh.','error');return}
     
     try{
-        const {data,error}=await sb.auth.signInWithPassword({email:e,password:p});
+        let email = input.toLowerCase();
+        
+        // If input doesn't look like an email, look up email by username
+        if(!validateEmail(input)){
+            console.log('Looking up email by username...');
+            const {data:profiles,error:lookupError}=await sb.from('profiles').select('email').ilike('username',input);
+            if(lookupError){console.error('Lookup error:',lookupError)}
+            if(!profiles||profiles.length===0||!profiles[0].email){
+                toast('Username not found. Try your email.','error');
+                return;
+            }
+            email=profiles[0].email;
+            console.log('Found email:', email);
+        }
+        
+        console.log('Attempting Supabase login with email:', email);
+        const {data,error}=await sb.auth.signInWithPassword({email:email,password:p});
+        console.log('Login response:', data, error);
         if(error){toast(error.message,'error');return}
         if(data.user){
             await loadUserProfile(data.user.id);
@@ -992,7 +995,7 @@ async function handleLogin(){
             closeAuthModal();
             toast('Welcome back!','success');
         }
-    }catch(err){toast('Login failed. Try again.','error');console.error(err)}
+    }catch(err){toast('Login failed. Try again.','error');console.error('Login error:',err)}
 }
 
 async function loadUserProfile(userId){
